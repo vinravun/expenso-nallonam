@@ -1,16 +1,16 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
-import { ExpensesContext } from '../contexts/ExpensesContext';
+import { useExpensesData, useSetExpenses } from '../contexts/ExpensesContext';
 
-function ExpensesList({ setExpenses }) {
-    const expenses = useContext(ExpensesContext);
+function ExpensesList() {
+    const expenses = useExpensesData();
 
     function deleteExpense(id) {
         const currentExpenses = [...expenses];
         currentExpenses.splice(id, 1);
 
-        setExpenses([...currentExpenses]);
+        useSetExpenses([...currentExpenses]);
     }
 
     return (

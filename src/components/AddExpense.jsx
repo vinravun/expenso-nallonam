@@ -1,11 +1,10 @@
-import React, { useContext, useRef } from 'react';
+import React, { useRef } from 'react';
 // import PropTypes from "prop-types";
-import { ExpensesContext } from '../contexts/ExpensesContext';
+import { useExpensesData, useSetExpenses } from '../contexts/ExpensesContext';
 
-function AddExpense({ setExpenses }) {
+function AddExpense() {
     const amountRef = useRef(null);
     const detailsRef = useRef(null);
-    const expenses = useContext(ExpensesContext);
 
     function addExpense() {
         const newExpense = {
@@ -13,7 +12,7 @@ function AddExpense({ setExpenses }) {
             details: detailsRef.current.value,
         };
 
-        setExpenses([...expenses, newExpense]);
+        useSetExpenses([...useExpensesData(), newExpense]);
 
         amountRef.current.value = '';
         detailsRef.current.value = '';
