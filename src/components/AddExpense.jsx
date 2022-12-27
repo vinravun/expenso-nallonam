@@ -1,42 +1,39 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 // import PropTypes from "prop-types";
-import { useExpensesData, useSetExpenses } from '../contexts/ExpensesContext';
+import Parser from 'html-react-parser';
+import { useExpensesData } from '../contexts/ExpensesContext';
+import { categories } from '../expensesData';
 
 function AddExpense() {
     const amountRef = useRef(null);
-    const detailsRef = useRef(null);
+    const [current, setCurrent] = useState(Object.keys(categories)[0]);
+    const { expenses, setExpenses } = useExpensesData();
 
     function addExpense() {
         const newExpense = {
             amount: amountRef.current.value,
-            details: detailsRef.current.value,
+            category: current,
         };
 
-        useSetExpenses([...useExpensesData(), newExpense]);
+        setExpenses([...expenses, newExpense]);
 
         amountRef.current.value = '';
-        detailsRef.current.value = '';
     }
 
     return (
-        <div className="flex gap-5 justify-between">
-            <div className="flex gap-2 flex-1">
+        <div className="flex justify-between">
+            <div className="flex items-center gap-1">
                 <input
                     type="number"
-                    placeholder="Add amount"
-                    className="w-1/3 border rounded-lg p-2"
+                    placeholder="How much did you spend?"
+                    className="border rounded-lg p-2"
                     ref={amountRef}
                 />
-                <input
-                    type="text"
-                    placeholder="Add details"
-                    className="w-2/3 border rounded-lg p-2"
-                    ref={detailsRef}
-                />
+                <Categories current={current} setCurrent={setCurrent} />
             </div>
             <button
                 type="button"
-                className="border p-2 rounded-lg"
+                className="p-2 rounded-lg"
                 onClick={addExpense}
             >
                 <svg
@@ -63,3 +60,40 @@ function AddExpense() {
 AddExpense.propTypes = {};
 
 export default AddExpense;
+
+function Categories({ current, setCurrent }) {
+    const [open, setOpen] = useState(false);
+
+    return (
+        <div className="relative">
+            <button
+                type="button"
+                aria-label={current}
+                className="border rounded-lg p-3"
+                onClick={() => setOpen(!open)}
+            >
+                {Parser(categories[current].icon)}
+            </button>
+
+            {open ? (
+                <ul className="absolute top-full border w-full p-3 rounded-lg bg-white">
+                    {Object.keys(categories).map((category, i) => (
+                        <li key={`category-${i}`} className="mb-2 last:mb-0">
+                            <button
+                                type="button"
+                                aria-label={category}
+                                onClick={() => {
+                                    setCurrent(category);
+                                }}
+                            >
+                                <span className="pointer-events-none">
+                                    {Parser(categories[category].icon)}
+                                </span>
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            ) : null}
+        </div>
+    );
+}

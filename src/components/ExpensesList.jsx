@@ -1,23 +1,30 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import Parser from 'html-react-parser';
 
-import { useExpensesData, useSetExpenses } from '../contexts/ExpensesContext';
+import { useExpensesData } from '../contexts/ExpensesContext';
+import { categories } from '../expensesData';
 
 function ExpensesList() {
-    const expenses = useExpensesData();
+    const { expenses, setExpenses } = useExpensesData();
 
     function deleteExpense(id) {
         const currentExpenses = [...expenses];
         currentExpenses.splice(id, 1);
 
-        useSetExpenses([...currentExpenses]);
+        setExpenses([...currentExpenses]);
     }
 
     return (
-        <ul className="mb-5">
-            {expenses.map((data, i) => (
-                <li key={`data-${i}`} className="flex gap-5 justify-between">
-                    {data.details} - {data.amount}
+        <ul className="border-b pb-5 mb-5">
+            {expenses.map((data) => (
+                <li
+                    key={`data-${data.id}`}
+                    className="flex gap-5 justify-between leading-none mb-3 last:mb-0"
+                >
+                    <span className="flex">
+                        <span>{Parser(categories[data.category].icon)}</span>
+                        <span className="ml-2">{data.amount}</span>
+                    </span>
                     <button
                         type="button"
                         onClick={() => deleteExpense(expenses.indexOf(data))}
